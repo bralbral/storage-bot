@@ -53,6 +53,9 @@ async def test_only_one_archive_can_reserve_a_user_buffer(tmp_path: Path) -> Non
     assert archive_name.endswith(".tar.gz")
     assert (archived_count, failed_count) == (1, 0)
     assert await service.get_buffer(100) == []
+    # The gzip FNAME flag must be unset: temporary ``.part`` paths should never
+    # be visible to archive viewers such as Total Commander.
+    assert (tmp_path / archive_name).read_bytes()[3] & 0x08 == 0
     await database.close()
 
 

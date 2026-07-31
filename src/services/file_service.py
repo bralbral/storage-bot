@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import os
-import tarfile
 import tempfile
 import uuid
 from collections import defaultdict
@@ -17,6 +16,7 @@ from src.db.database import Database
 from src.logging_config import get_logger
 from src.models.file_info import FileInfo
 from src.services.compression_service import CompressionService
+from src.utils.archive import open_tar_gz
 from src.utils.file_utils import detect_image_format
 from src.utils.naming import generate_filename
 
@@ -333,7 +333,7 @@ class FileService:
 
         try:
             self.download_dir.mkdir(parents=True, exist_ok=True)
-            with tarfile.open(temporary_archive_path, "w:gz") as tar:
+            with open_tar_gz(temporary_archive_path) as tar:
                 for buffered_file in buffer:
                     file_info = buffered_file.file_info
                     temp_path: Path | None = None

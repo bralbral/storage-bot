@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import gzip
 import os
 from datetime import datetime
 from pathlib import Path
@@ -11,6 +10,7 @@ import docker
 
 from src.logging_config import get_logger
 from src.models.docker import DockerImageInfo
+from src.utils.archive import open_gzip_without_filename
 
 logger = get_logger(__name__)
 
@@ -103,10 +103,9 @@ class DockerService:
             logger.info("Saving and compressing Docker image", filename=gz_filename)
             image = client.images.get(image_name)
             try:
-                with open(temporary_path, "wb") as f_out:
-                    with gzip.GzipFile(fileobj=f_out, mode="wb") as gzip_file:
-                        for chunk in image.save(named=True):
-                            gzip_file.write(chunk)
+                with open_gzip_without_filename(temporary_path) as gzip_file:
+                    for chunk in image.save(named=True):
+                        gzip_file.write(chunk)
                 os.replace(temporary_path, gz_filepath)
             finally:
                 temporary_path.unlink(missing_ok=True)

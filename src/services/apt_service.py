@@ -5,7 +5,6 @@ import os
 import re
 import shlex
 import shutil
-import tarfile
 import tempfile
 import uuid
 from dataclasses import dataclass
@@ -16,6 +15,7 @@ import docker
 
 from src.logging_config import get_logger
 from src.models.apt import AptDownloadInfo
+from src.utils.archive import open_tar_gz
 
 logger = get_logger(__name__)
 
@@ -179,7 +179,7 @@ class AptService:
                 archive_path.suffix + ".part"
             )
             try:
-                with tarfile.open(temporary_archive_path, "w:gz") as archive:
+                with open_tar_gz(temporary_archive_path) as archive:
                     for deb_file in deb_files:
                         archive.add(deb_file, arcname=deb_file.name)
                 os.replace(temporary_archive_path, archive_path)

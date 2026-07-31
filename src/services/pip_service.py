@@ -4,7 +4,6 @@ import asyncio
 import os
 import re
 import shutil
-import tarfile
 import tempfile
 import uuid
 from datetime import datetime
@@ -14,6 +13,7 @@ import docker
 
 from src.logging_config import get_logger
 from src.models.pip import PipDownloadInfo
+from src.utils.archive import open_tar_gz
 
 logger = get_logger(__name__)
 
@@ -118,7 +118,7 @@ class PipService:
                 archive_path.suffix + ".part"
             )
             try:
-                with tarfile.open(temporary_archive_path, "w:gz") as archive:
+                with open_tar_gz(temporary_archive_path) as archive:
                     for wheel_file in wheel_files:
                         archive.add(wheel_file, arcname=wheel_file.name)
                 os.replace(temporary_archive_path, archive_path)
