@@ -31,6 +31,11 @@ class Config(BaseSettings):
     max_buffer_files: int = Field(default=100, gt=0)
     max_buffer_size: int = Field(default=10 * 1024 * 1024 * 1024, gt=0)
     max_text_collection_size: int = Field(default=10 * 1024 * 1024, gt=0)
+    telegram_file_timeout: int = Field(
+        default=1_800,
+        gt=0,
+        description="Maximum time to wait for Telegram to prepare a queued file",
+    )
     snapshot_dir: Path = Field(
         default=Path("./snapshots"), description="Directory shared with Playwright"
     )

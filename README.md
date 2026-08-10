@@ -268,6 +268,7 @@ apt download [--debian 10|11|12|13|10.x.y] [--snapshot YYYYMMDDTHHMMSSZ] [--no-d
 | `MAX_BUFFER_FILES` | `100` | Maximum queued files per user. |
 | `MAX_BUFFER_SIZE` | `10737418240` | Maximum combined queue size per user, in bytes. |
 | `MAX_TEXT_COLLECTION_SIZE` | `10485760` | Maximum in-memory size of one `/text` collection, in bytes. |
+| `TELEGRAM_FILE_TIMEOUT` | `1800` | Maximum time in seconds to wait for Telegram to prepare a queued file during `/drop`. |
 | `SNAPSHOT_DIR` | `./snapshots` | Temporary directory for HTML snapshots in the bot. In Compose: `/snapshots`. |
 | `PLAYWRIGHT_URL` | `http://playwright:3000` | Internal Playwright sidecar URL. |
 | `PLAYWRIGHT_TIMEOUT` | `60` | Total page snapshot timeout, in seconds. |

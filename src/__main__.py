@@ -62,6 +62,7 @@ async def setup_bot() -> tuple[
         max_buffer_files=config.max_buffer_files,
         max_buffer_size=config.max_buffer_size,
         max_text_collection_size=config.max_text_collection_size,
+        telegram_file_timeout=config.telegram_file_timeout,
         snapshot_dir=config.snapshot_dir,
     )
     web_snapshot_service = WebSnapshotService(

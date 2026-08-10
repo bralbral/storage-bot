@@ -42,6 +42,7 @@ class FileService:
         max_buffer_files: int,
         max_buffer_size: int,
         max_text_collection_size: int = 10 * 1024 * 1024,
+        telegram_file_timeout: int = 1_800,
         snapshot_dir: Path | None = None,
     ) -> None:
         """Initialize file service.
@@ -56,6 +57,7 @@ class FileService:
         self.max_buffer_files = max_buffer_files
         self.max_buffer_size = max_buffer_size
         self.max_text_collection_size = max_text_collection_size
+        self.telegram_file_timeout = telegram_file_timeout
         self.snapshot_dir = (snapshot_dir or download_dir / "snapshots").resolve()
         self._user_locks: defaultdict[int, asyncio.Lock] = defaultdict(asyncio.Lock)
         self._archiving_users: set[int] = set()
@@ -356,7 +358,10 @@ class FileService:
                                     "Local snapshot file no longer exists"
                                 )
                         else:
-                            tg_file = await bot.get_file(file_info.file_id)
+                            tg_file = await bot.get_file(
+                                file_info.file_id,
+                                request_timeout=self.telegram_file_timeout,
+                            )
                             with tempfile.NamedTemporaryFile(delete=False) as temp_file:
                                 temp_path = Path(temp_file.name)
                             await bot.download_file(tg_file.file_path, temp_path)

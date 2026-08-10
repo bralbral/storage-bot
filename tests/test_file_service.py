@@ -11,7 +11,13 @@ from src.services.file_service import FileService
 
 
 class FakeBot:
-    async def get_file(self, file_id: str) -> SimpleNamespace:
+    def __init__(self) -> None:
+        self.request_timeout: int | None = None
+
+    async def get_file(
+        self, file_id: str, request_timeout: int | None = None
+    ) -> SimpleNamespace:
+        self.request_timeout = request_timeout
         return SimpleNamespace(file_path=file_id)
 
     async def download_file(self, file_path: str, destination: Path) -> None:
@@ -43,15 +49,17 @@ async def test_only_one_archive_can_reserve_a_user_buffer(tmp_path: Path) -> Non
     with pytest.raises(RuntimeError, match="already in progress"):
         await service.begin_archive(100)
 
+    bot = FakeBot()
     (
         archive_name,
         archived_count,
         failed_count,
     ) = await service.create_archive_from_buffer(
-        100, "prefix", FakeBot(), await service.get_buffer(100)
+        100, "prefix", bot, await service.get_buffer(100)
     )
     assert archive_name.endswith(".tar.gz")
     assert (archived_count, failed_count) == (1, 0)
+    assert bot.request_timeout == 1_800
     assert await service.get_buffer(100) == []
     # The gzip FNAME flag must be unset: temporary ``.part`` paths should never
     # be visible to archive viewers such as Total Commander.
