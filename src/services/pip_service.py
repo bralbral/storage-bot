@@ -22,10 +22,17 @@ class PipService:
     """Download Python wheels in an isolated, versioned Python container."""
 
     def __init__(
-        self, docker_host: str, download_dir: Path, max_concurrent_operations: int = 1
+        self,
+        docker_host: str,
+        download_dir: Path,
+        max_concurrent_operations: int = 1,
+        download_timeout: int = 86_400,
+        network_timeout: int = 120,
     ) -> None:
         self.docker_host = docker_host
         self.download_dir = download_dir
+        self.download_timeout = download_timeout
+        self.network_timeout = network_timeout
         self._operation_semaphore = asyncio.Semaphore(max_concurrent_operations)
         self._image_locks: dict[str, asyncio.Lock] = {}
         self._running_tasks: set[asyncio.Task] = set()
@@ -56,7 +63,9 @@ class PipService:
         container = None
         job_dir: Path | None = None
         archive_path: Path | None = None
-        client = docker.DockerClient(base_url=self.docker_host)
+        client = docker.DockerClient(
+            base_url=self.docker_host, timeout=self.download_timeout
+        )
 
         try:
             self.download_dir.mkdir(parents=True, exist_ok=True)
@@ -93,6 +102,8 @@ class PipService:
                     "--dest",
                     "/output",
                     "--no-cache-dir",
+                    "--timeout",
+                    str(self.network_timeout),
                     *([] if request.include_dependencies else ["--no-deps"]),
                     *(["--only-binary=:all:"] if request.only_binary else []),
                     *request.requirements,
@@ -105,7 +116,7 @@ class PipService:
                 labels={"storage-bot.operation": "pip-download"},
             )
             container.start()
-            result = container.wait(timeout=300)
+            result = container.wait(timeout=self.download_timeout)
             if result["StatusCode"] != 0:
                 output = container.logs(tail=30).decode(errors="replace").strip()
                 raise RuntimeError(output or "pip download failed")

@@ -274,7 +274,10 @@ apt download [--debian 10|11|12|13|10.x.y] [--snapshot YYYYMMDDTHHMMSSZ] [--no-d
 | `PLAYWRIGHT_TIMEOUT` | `60` | Total page snapshot timeout, in seconds. |
 | `PLAYWRIGHT_PAGE_TIMEOUT_MS` | `45000` | Chromium page-load timeout in milliseconds; passed to the Compose sidecar. |
 | `MAX_DOCKER_OPERATIONS` | `1` | Maximum concurrent Docker pull/export jobs. |
+| `DOCKER_DOWNLOAD_TIMEOUT` | `86400` | Maximum duration of one Docker image pull/export, in seconds. |
 | `MAX_PIP_OPERATIONS` | `1` | Maximum concurrent Python package download jobs. |
+| `PIP_DOWNLOAD_TIMEOUT` | `86400` | Maximum duration of one Python package download, in seconds. |
+| `PIP_NETWORK_TIMEOUT` | `120` | Timeout of one request to a Python package index, in seconds. |
 | `MAX_APT_OPERATIONS` | `1` | Maximum concurrent Debian package download jobs. |
 | `APT_DOWNLOAD_TIMEOUT` | `86400` | Maximum duration of one Debian package download, in seconds. |
 | `THROTTLE_RATE` | `3.0` | Throttling interval for unregistered users, in seconds. |

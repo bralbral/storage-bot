@@ -46,6 +46,9 @@ class Config(BaseSettings):
     max_docker_operations: int = Field(default=1, gt=0)
     max_pip_operations: int = Field(default=1, gt=0)
     max_apt_operations: int = Field(default=1, gt=0)
+    docker_download_timeout: int = Field(default=86_400, gt=0)
+    pip_download_timeout: int = Field(default=86_400, gt=0)
+    pip_network_timeout: int = Field(default=120, gt=0)
     apt_download_timeout: int = Field(default=86_400, gt=0)
 
     throttle_rate: float = Field(

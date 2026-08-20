@@ -22,7 +22,11 @@ class DockerService:
     """Service for Docker image operations."""
 
     def __init__(
-        self, docker_host: str, download_dir: Path, max_concurrent_operations: int = 1
+        self,
+        docker_host: str,
+        download_dir: Path,
+        max_concurrent_operations: int = 1,
+        download_timeout: int = 86_400,
     ) -> None:
         """Initialize Docker service.
 
@@ -32,6 +36,7 @@ class DockerService:
         """
         self.docker_host = docker_host
         self.download_dir = download_dir
+        self.download_timeout = download_timeout
         self._running_tasks: set[asyncio.Task] = set()
         self._image_locks: dict[str, asyncio.Lock] = {}
         self._operation_semaphore = asyncio.Semaphore(max_concurrent_operations)
@@ -65,7 +70,9 @@ class DockerService:
         Raises:
             docker.errors.APIError: If pull fails
         """
-        client = docker.DockerClient(base_url=self.docker_host)
+        client = docker.DockerClient(
+            base_url=self.docker_host, timeout=self.download_timeout
+        )
         try:
             logger.info("Pulling Docker image", image=image_name)
             client.images.pull(image_name)
@@ -89,7 +96,9 @@ class DockerService:
         Raises:
             Exception: If save fails
         """
-        client = docker.DockerClient(base_url=self.docker_host)
+        client = docker.DockerClient(
+            base_url=self.docker_host, timeout=self.download_timeout
+        )
         try:
             self.download_dir.mkdir(parents=True, exist_ok=True)
 
@@ -123,7 +132,9 @@ class DockerService:
         Args:
             image_name: Docker image name to remove
         """
-        client = docker.DockerClient(base_url=self.docker_host)
+        client = docker.DockerClient(
+            base_url=self.docker_host, timeout=self.download_timeout
+        )
         try:
             logger.info("Removing Docker image", image_name=image_name)
             client.images.remove(image_name, force=True)

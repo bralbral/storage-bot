@@ -74,6 +74,7 @@ async def setup_bot() -> tuple[
         docker_host=config.docker_host,
         download_dir=download_dir,
         max_concurrent_operations=config.max_docker_operations,
+        download_timeout=config.docker_download_timeout,
     )
     apt_service = AptService(
         docker_host=config.docker_host,
@@ -85,6 +86,8 @@ async def setup_bot() -> tuple[
         docker_host=config.docker_host,
         download_dir=download_dir,
         max_concurrent_operations=config.max_pip_operations,
+        download_timeout=config.pip_download_timeout,
+        network_timeout=config.pip_network_timeout,
     )
 
     bot_token = config.bot_token
